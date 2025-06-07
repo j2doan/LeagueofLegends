@@ -202,11 +202,11 @@ Thus, our conclusion is that **`playerid` is NMAR without additional context out
 
 Next, we will explore the missingness of `teamid`.
 
-Unlike playerid, `teamid` is central to our primary research question: how **team-level statistics** like wpm relate to winning. This makes its missingness more **consequential** — if rows with missing teamid differ systematically, their exclusion could bias our analysis. In other words, it really doesn't matter what type of missingness `playerid` has, since the objective of our main analysis does not care for it. That column was only supposed to give us a visual representation of how each team has multiple rows of data that needed to be aggregated into. The more imporant column of interst is `teamid`
+Unlike playerid, `teamid` is central to our primary research question: how **team-level statistics** like wpm relate to winning. This makes its missingness more **consequential** — if rows with missing teamid differ systematically, their exclusion could bias our analysis. In other words, **it really doesn't matter what type of missingness `playerid` has, since the objective of our main analysis does not care for it**. That column was only supposed to give us a visual representation of how each team has multiple rows of data that needed to be aggregated into. The more imporant column of interst is `teamid`
 
 While teamid also has missing values in **relevant_df**, we realized that to properly investigate its missingness mechanism, we needed to go beyond **relevant_df**. Many of the variables such as match level data like `datacompleteness` were likely to explain its absence. Othe arbitrary gameplay statistics like `earnedgpm` could also be analyzed in context too, but these columns were only available in the original full dataset (df).
 
-Therefore, we extended our analysis and performed permutation tests using variables from the full dataset. Our goal was to determine whether the missingness of `teamid` is Missing Completely At Random (MCAR), Missing At Random (MAR), or potentially NMAR. If the missingness can be explained by known columns, it would support a MAR classification and justify our earlier decision to drop rows with missing teamid in `wards_df`. If not, we would need to re-evaluate our cleaning method.
+Therefore, **we extended our analysis and performed permutation tests using variables from the full dataset**. Our goal was to determine whether the missingness of `teamid` is Missing Completely At Random (MCAR), Missing At Random (MAR), or potentially NMAR. If the missingness can be explained by known columns, it would support a MAR classification and justify our earlier decision to drop rows with missing teamid in `wards_df`. If not, we would need to re-evaluate our cleaning method.
 
 The following permutation tests evaluate whether `teamid` missingness depends on observed columns.
 
@@ -214,9 +214,9 @@ The following permutation tests evaluate whether `teamid` missingness depends on
 
 Our hypothesis is that `teamid` is Missing At Random (MAR), because it would justify our decision to remove those missing rows. To test this, we examined whether the missingness of teamid depends on:
 
-- Another column in `df` that should be related (like `datacompleteness`, since if the data is only partially complete is missing, we might expect teamid to be incomplete)
+- **Another column in `df` that should be related** (**like `datacompleteness`**, since if the data is only partially complete is missing, we might expect teamid to be incomplete)
 
-- Another column in `df` that should not be related (like `earnedgpm`, since earned gold per minute shouldn't logically influence whether a team's name is recorded or not)
+- **Another column in `df` that should not be related** (**like `earnedgpm`**, since earned gold per minute shouldn't logically influence whether a team's name is recorded or not)
 
 We conducted permutation tests to investigate whether the distributions of these variables change depending on whether teamid is missing or not. The basic idea of these permutaion tests is to get evidence that if our p-value is low, then the column is likely MAR. If it is not low, then the column is likely MCAR. Below, we present and interpret our results. We also made our alpha threshold at a standard 0.05.
 
