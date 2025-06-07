@@ -36,7 +36,7 @@ Here, we will take a first look at our only dataset `df`: A League of Legends es
 
 </div>
 
-This dataset seems quite impressive. There are **117647** rows, meaning that many entries reprsenting a player during a specific match. More importantly, there seems to be a lot of columns... **161** to be exact. Most of these columns are irrelevant at this stage of investigating our question, which is why we will include only examine, clean, and plot the relevant columns for now for a better understanding. Also, the dataframe above only shows the relevant columns for this project.
+This dataset seems quite impressive. There are **117647** rows, meaning that many entries representing a player during a specific match. More importantly, there seems to be a lot of columns... **161** to be exact. Most of these columns are irrelevant at this stage of investigating our question, which is why we will include only examine, clean, and plot the relevant columns for now for a better understanding. Also, the dataframe above only shows the relevant columns for this project.
 
 Now, with a simple for loop, we can manually search and extract the relevant columns through a scrollable element:
 
