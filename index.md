@@ -317,16 +317,49 @@ Thus, we will groupby the relevant dataframe to show us each team's average `wpm
 
 We will now aggregate `relevant_df`.
 
-<div style="overflow-x: auto; white-space: nowrap;">
-
-| gameid             | teamid                                  |     wpm |   result |
-|:-------------------|:----------------------------------------|--------:|---------:|
-| 10660-10660_game_1 | oe:team:8516ca63facc91286d6c00212ca945e | 1.29372 |        1 |
-| 10660-10660_game_1 | oe:team:a9145b7711873f53e610fbba0493484 | 1.02863 |        0 |
-| 10660-10660_game_2 | oe:team:8516ca63facc91286d6c00212ca945e | 1.21405 |        1 |
-| 10660-10660_game_2 | oe:team:a9145b7711873f53e610fbba0493484 | 0.921   |        0 |
-| 10660-10660_game_3 | oe:team:8516ca63facc91286d6c00212ca945e | 1.13293 |        0 |
-
+<div style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>gameid</th>
+        <th>teamid</th>
+        <th>wpm</th>
+        <th>result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>10660-10660_game_1</td>
+        <td>oe:team:8516ca63facc91286d6c00212ca945e</td>
+        <td>1.29372</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>10660-10660_game_1</td>
+        <td>oe:team:a9145b7711873f53e610fbba0493484</td>
+        <td>1.02863</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>10660-10660_game_2</td>
+        <td>oe:team:8516ca63facc91286d6c00212ca945e</td>
+        <td>1.21405</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>10660-10660_game_2</td>
+        <td>oe:team:a9145b7711873f53e610fbba0493484</td>
+        <td>0.921</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>10660-10660_game_3</td>
+        <td>oe:team:8516ca63facc91286d6c00212ca945e</td>
+        <td>1.13293</td>
+        <td>0</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 This looks way more organized! We also double checked to make sure that `result` only consisted of 1s or 0s. Let's perform a univarate analysis just to visualize the distribution of `wpm`, regardless of whether a team won or lost.
@@ -397,11 +430,11 @@ Thus, our conclusion is that **`playerid` is NMAR without additional context out
 
 Next, we will explore the missingness of `teamid`.
 
-Unlike playerid, `teamid` is central to our primary research question: how **team-level statistics** like wpm relate to winning. This makes its missingness more **consequential** — if rows with missing teamid differ systematically, their exclusion could bias our analysis. In other words, it really doesn't matter what type of missingness `playerid` has, since the objective of our main analysis does not care for it. That column was only supposed to give us a visual representation of how each team has multiple rows of data that needed to be aggregated into. The more imporant column of interst is `teamid`
+Unlike playerid, `teamid` is central to our primary research question: how **team-level statistics** like wpm relate to winning. This makes its missingness more **consequential** — if rows with missing teamid differ systematically, their exclusion could bias our analysis. In other words, **it really doesn't matter what type of missingness `playerid` has, since the objective of our main analysis does not care for it**. That column was only supposed to give us a visual representation of how each team has multiple rows of data that needed to be aggregated into. The more imporant column of interst is `teamid`
 
 While teamid also has missing values in **relevant_df**, we realized that to properly investigate its missingness mechanism, we needed to go beyond **relevant_df**. Many of the variables such as match level data like `datacompleteness` were likely to explain its absence. Othe arbitrary gameplay statistics like `earnedgpm` could also be analyzed in context too, but these columns were only available in the original full dataset (df).
 
-Therefore, we extended our analysis and performed permutation tests using variables from the full dataset. Our goal was to determine whether the missingness of `teamid` is Missing Completely At Random (MCAR), Missing At Random (MAR), or potentially NMAR. If the missingness can be explained by known columns, it would support a MAR classification and justify our earlier decision to drop rows with missing teamid in `wards_df`. If not, we would need to re-evaluate our cleaning method.
+Therefore, **we extended our analysis and performed permutation tests using variables from the full dataset**. Our goal was to determine whether the missingness of `teamid` is Missing Completely At Random (MCAR), Missing At Random (MAR), or potentially NMAR. If the missingness can be explained by known columns, it would support a MAR classification and justify our earlier decision to drop rows with missing teamid in `wards_df`. If not, we would need to re-evaluate our cleaning method.
 
 The following permutation tests evaluate whether `teamid` missingness depends on observed columns.
 
@@ -409,9 +442,9 @@ The following permutation tests evaluate whether `teamid` missingness depends on
 
 Our hypothesis is that `teamid` is Missing At Random (MAR), because it would justify our decision to remove those missing rows. To test this, we examined whether the missingness of teamid depends on:
 
-- Another column in `df` that should be related (like `datacompleteness`, since if the data is only partially complete is missing, we might expect teamid to be incomplete)
+- **Another column in `df` that should be related** (**like `datacompleteness`**, since if the data is only partially complete is missing, we might expect teamid to be incomplete)
 
-- Another column in `df` that should not be related (like `earnedgpm`, since earned gold per minute shouldn't logically influence whether a team's name is recorded or not)
+- **Another column in `df` that should not be related** (**like `earnedgpm`**, since earned gold per minute shouldn't logically influence whether a team's name is recorded or not)
 
 We conducted permutation tests to investigate whether the distributions of these variables change depending on whether teamid is missing or not. The basic idea of these permutaion tests is to get evidence that if our p-value is low, then the column is likely MAR. If it is not low, then the column is likely MCAR. Below, we present and interpret our results. We also made our alpha threshold at a standard 0.05.
 
@@ -529,16 +562,73 @@ From now on, **we need to approach this section with a different dataframe calle
 
 Let's take a look at `df_model`. Note not all columns are shown, and this is a dataframe that represents all rows that have `datacompleteness` as complete.
 
-<div style="overflow-x: auto; white-space: nowrap;">
-
-| side   | position   |   result |   wardsplaced |    wpm |   controlwardsbought |   visionscore |   vspm |
-|:-------|:-----------|---------:|--------------:|-------:|---------------------:|--------------:|-------:|
-| Blue   | top        |        1 |             7 | 0.2905 |                    3 |            17 | 0.7054 |
-| Blue   | jng        |        1 |             7 | 0.2905 |                    7 |            40 | 1.6598 |
-| Blue   | mid        |        1 |             6 | 0.249  |                    3 |            24 | 0.9959 |
-| Blue   | bot        |        1 |            10 | 0.4149 |                    6 |            33 | 1.3693 |
-| Blue   | sup        |        1 |            34 | 1.4108 |                   11 |            72 | 2.9876 |
-
+<div style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>side</th>
+        <th>position</th>
+        <th>result</th>
+        <th>wardsplaced</th>
+        <th>wpm</th>
+        <th>controlwardsbought</th>
+        <th>visionscore</th>
+        <th>vspm</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Blue</td>
+        <td>top</td>
+        <td>1</td>
+        <td>7</td>
+        <td>0.2905</td>
+        <td>3</td>
+        <td>17</td>
+        <td>0.7054</td>
+      </tr>
+      <tr>
+        <td>Blue</td>
+        <td>jng</td>
+        <td>1</td>
+        <td>7</td>
+        <td>0.2905</td>
+        <td>7</td>
+        <td>40</td>
+        <td>1.6598</td>
+      </tr>
+      <tr>
+        <td>Blue</td>
+        <td>mid</td>
+        <td>1</td>
+        <td>6</td>
+        <td>0.249</td>
+        <td>3</td>
+        <td>24</td>
+        <td>0.9959</td>
+      </tr>
+      <tr>
+        <td>Blue</td>
+        <td>bot</td>
+        <td>1</td>
+        <td>10</td>
+        <td>0.4149</td>
+        <td>6</td>
+        <td>33</td>
+        <td>1.3693</td>
+      </tr>
+      <tr>
+        <td>Blue</td>
+        <td>sup</td>
+        <td>1</td>
+        <td>34</td>
+        <td>1.4108</td>
+        <td>11</td>
+        <td>72</td>
+        <td>2.9876</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 This dataset allows us to include richer in-game features — such as:
@@ -688,16 +778,22 @@ In this final section, we will futher investigate the potential biases of our mo
 
 In LoL, each match is split into two opposing teams: Red and Blue. Although both sides function symmetrically in layout at a first glance, their placements actually differ in objective positioning, and vision angles. These differences can **influence gameplay and outcomes**, which is why "side selection" is often a strategic consideration in professional play. We can further visualize this by taking a look at the `side` and `position` columns in our original dataset.
 
-<div style="overflow-x: auto; white-space: nowrap;">
-
-| side   | position   |
-|:-------|:-----------|
-| Blue   | top        |
-| Blue   | jng        |
-| Blue   | mid        |
-| Blue   | bot        |
-| Blue   | sup        |
-
+<div style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>side</th>
+        <th>position</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Blue</td><td>top</td></tr>
+      <tr><td>Blue</td><td>jng</td></tr>
+      <tr><td>Blue</td><td>mid</td></tr>
+      <tr><td>Blue</td><td>bot</td></tr>
+      <tr><td>Blue</td><td>sup</td></tr>
+    </tbody>
+  </table>
 </div>
 
 In our fairness analysis, we will examine whether our model performs equitably across these two sides, or if it favors one over the other.
