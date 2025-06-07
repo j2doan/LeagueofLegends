@@ -4,7 +4,7 @@ title: League of Legends Ward Correlation Analysis
 
 # **League of Legends Ward Correlation Analysis**
 
-Welcome to our data science project exploring optimal ward placements in professional League of Legends games. 
+Welcome to our data science project exploring optimal ward placements in professional League of Legends games! 
 
 ## **Introduction**
 
@@ -34,9 +34,9 @@ Here, we will take a first look at our only dataset `df`: A League of Legends es
 
 </div>
 
-This dataset seems quite impressive. Note that this is just a portion of the entire dataframe. There are 117647 rows, meaning that many entries reprsenting a player during a specific match. More importantly, there seems to be a lot of columns... **161** to be exact. Most of these columns are irrelevant at this stage of investigating our question, so we will include only examine, clean, and plot the relevant columns for now for a better understanding.
+This dataset seems quite impressive. There are **117647** rows, meaning that many entries reprsenting a player during a specific match. More importantly, there seems to be a lot of columns... **161** to be exact. Most of these columns are irrelevant at this stage of investigating our question, which is why we will include only examine, clean, and plot the relevant columns for now for a better understanding. Also, the dataframe above only shows the relevant columns for this project.
 
-With a simple for loop, we can manually search and extract the relevant columns through a scrollable element:
+Now, with a simple for loop, we can manually search and extract the relevant columns through a scrollable element:
 
 ```
 for i in df.columns:
@@ -46,15 +46,21 @@ for i in df.columns:
 Upon a manual inspection, some columns appear to be relevant:
 
 1. **`gameid`** (string): the id of the match that two teams played in against each other.
+
 2. **`playerid`** (string): the player on that team for the current match.
+
 3. **`teamid`** (string): the id of the team that played in that match.
+
 4. **`wardsplaced`** (int): the total number of wards placed by everyone in that team for the entire match.
+
 5. **`gamelength`** (int): the number of seconds that the match took.
+
 6. **`wpm`** (float): the rate of number of wards placed per minute.
   - Note: this column was already given to us.
   - However, a person can get a similar value by converting the gamelength value into minutes, and then dividing wardsplaced by gamelength in minutes.
   - Example: 1886 seconds * 60 = 31.43 minutes.
   - 14 wards placed / 31.43 minutes = 0.45 wards placed per minute
+
 7. **`result`** (int): whether a team won that match. 1 represents a win, 0 reprsents a loss.
 
 Below is `relevant_df`, a dataframe with only the above 7 columns that are relevant for now.
@@ -79,8 +85,10 @@ We can now start cleaning this data frame by ensuring the following:
   - This is because there cannot be a negative number of wards placed in a game, the minimum is 0.
   - Likewise a game must last at least greater than 0 seconds. This makes sense intutively, and also because to calculate wpm, we cannot divide by 0.
   - And finally, `wpm`, representing a proportion, cannot be negative.
+
 2. We must verify that all wpm is an accurate reprsentation of the wardsplaced and gamelength columns.
   - This means we must check whether `wpm` = `wardsplaced` / (`gamelength` / 60)
+
 3. We must verify that the `results` column consists of either only 1s or 0s
   - Anything other than that would be incorrect, as it wouldn't represent a win or loss.
 
@@ -88,9 +96,9 @@ On a side note, we are leaving `gameid`, `playerid`, and `teamid` alone for now.
 
 ### After Verification
 
-**It turns out, there are no incorrectly formatted data within our relevant dataset that needs to be corrected at this time.** This means out dataset was already given to us clean. Thank goodness!
+**It turns out, there are no incorrectly formatted data within our relevant dataset that needs to be corrected at this time.** This means out dataset was already given to us clean for the most part. Thank goodness!
 
-Before, we can begin aggregating this dataframe, we need to understand the influence of the column playerid. Let's take a snippet of just ONE game for example. We will use gameid `10660-10660_game_1` for this demonstration.
+Before we can begin aggregating this dataframe, we need to understand the influence of the column playerid. Let's take a snippet of just **one** game for example. We will filter our dataframe to only include gameid `10660-10660_game_1` for this demonstration.
 
 <div style="overflow-x: auto; white-space: nowrap;">
 
@@ -104,15 +112,15 @@ Before, we can begin aggregating this dataframe, we need to understand the influ
 
 </div>
 
-Notice how each row represents a PLAYER'S statistics. Our goal is to find the optimal wards placed per minute by TEAM overall. Each player on a team has different roles, so naturally some players may place a different rate of wpm than others depending on how much they are supposed to support the team.
+Notice how **each row represents a player's statistics**. Our goal is to find the optimal wards placed per minute by **team overall**. Each player on a team has different roles, so naturally some players may place a different rate of `wpm` than others depending on how much they are supposed to support the team.
 
-Thus, we will groupby the relevant dataframe to show us each team's average wpm, and whether they won or lost, in a specific game.
+Thus, we will groupby the relevant dataframe to show us each team's average `wpm`, and whether they won or lost, in a specific game.
 
 *Note: if a team won or lost, then all players in their team should share the same result value. Thus, results can only be a 1 or 0.*
 
 ### **Aggregation**
 
-Let's now aggregate `relevant_df`.
+We will now aggregate `relevant_df`.
 
 <div style="overflow-x: auto; white-space: nowrap;">
 
@@ -126,9 +134,9 @@ Let's now aggregate `relevant_df`.
 
 </div>
 
-This looks way more organized! We also double checked to make sure that `result` only consisted of 1s or 0s. Let's perform a univarate analysis just to visualize the distribution of wpm, regardless of whether a team won or lost.
+This looks way more organized! We also double checked to make sure that `result` only consisted of 1s or 0s. Let's perform a univarate analysis just to visualize the distribution of `wpm`, regardless of whether a team won or lost.
 
-Now, `wpm` being a proportion makes itself a continuous variable, unlike `wardsplaced` or `gamelength` which are represented by discrete values. So, we will be visualizing these distributions with a KDE and box plot.
+Also, `wpm` being a proportion makes itself a continuous variable, unlike `wardsplaced` or `gamelength` which are represented by discrete values. So, we will be visualizing these distributions with a KDE and box plot.
 
 ### **Univariate Analysis**
 
@@ -146,7 +154,7 @@ Now, `wpm` being a proportion makes itself a continuous variable, unlike `wardsp
   frameborder="0"
 ></iframe>
 
-Now, let's see if there is a glaring difference at first sight between the wdm of teams that won, and the wdm of teams that lost.
+Now, let's see if there is a glaring difference at first sight between the `wpm` of teams that won, and the wdm of teams that lost.
 
 ### **Bivariate Analysis**
 
@@ -166,7 +174,7 @@ Now, let's see if there is a glaring difference at first sight between the wdm o
 
 Hmmm... it seems like there is only a slight difference at a visual glance. However, we cannot conclude anything decisive yet, because we need to properly test it. Also, we need to take in account for the large number of samples when looking at this "small" difference...
 
-Before we continue, we will now refer to the `grouped` dataframe as `wards_df` from this point on, unless we specifically need to refer back to `grouped` for some reason. This is because it helps organize our dataframes, and it sounds more meaningful than `grouped` for the context of this project.
+*Before we continue, we will now refer the `grouped` dataframe as `wards_df` from this point on, unless we specifically need to refer back to `grouped` for some reason. This is because it helps organize our dataframes, and it sounds more meaningful than `grouped` for the context of this project.*
 
 ## **Assessment of Missingness**
 
@@ -176,19 +184,19 @@ However, this decision raises an important question: **was the missingness of te
 
 In our earlier cleaning steps, we focused on ensuring that quantitative columns like wpm, result, and wardsplaced contained no missing values. We did not yet explore missingness in columns as `gameid`, `playerid`, and `teamid`, because of their irrelevance to aggregating the data at the time. Now, as we transition to a deeper analysis of missing data, we will revisit the full `relevant_df` and `df` to formally investigate the missingness mechanisms behind `teamid` and how they might affect our conclusions.
 
-**As it turns out, only `playerid` and `teamid` has missing values.** Precisely, `playerid` has 20660 null values in `relevant_df`, and `teamid` has 2712 missing values. Let's analyze `playerid` first before we move on.
+**As it turns out, only `playerid` and `teamid` has missing values.** Precisely, `playerid` has **20660** null values in `relevant_df`, and `teamid` has **2712** missing values. Let's analyze `playerid` first before we move on.
 
 ### **NMAR Analysis**
 
-At first glance, the column `playerid` appears to be Not Missing At Random (NMAR). There are several reasons to suspect this.
+At a first glance, the column `playerid` appears to be Not Missing At Random (NMAR). There are several reasons to suspect this.
 
-First, there are many more missing `playerid` values than there are missing `teamid` values. So implies that `playerid` can be **missing independently of `teamid`** — which is important context. Moreover, many rows with missing `playerid` still contain a valid `teamid` and complete gameplay statistics — such as `wardsplaced`, `wpm`, and `result`. This suggests that the missingness is not tied to overall data corruption completely, but rather it could be to the identity of the player itself.
+First, there are many more missing `playerid` values than there are missing `teamid` values. This implies that `playerid` can be **missing independently of `teamid`**, which is important context. Moreover, many rows with missing `playerid` still contain a valid `teamid` and complete gameplay statistics, such as `wardsplaced`, `wpm`, and `result`. This suggests that the missingness is not tied to overall data corruption completely, but rather it could be to the identity of the player itself.
 
 **Without additional context**, it seems the missingness can be tied to the player's identity itself. Examples that could explain this could be due to data privacy settings, untracked players, or deleted accounts. These are unobservable from within the dataset, which fits the definition of NMAR.
 
 However, it is important to note that we are only basing our conclusion given only the column context within `wards_df`. If we were to incorporate broader metadata from the full dataset, such as datacompleteness, league, or split, we might find patterns that explain the missingness of `playerid`. For example, matches flagged as "partial" in the column `datacompleteness` **may** (not guaranteed though, because we don't know what exactly is missing) be systematically missing player identity information. In that case, the missingness could be modeled by observed variables, and `playerid` would instead be considered Missing At Random (MAR).
 
-Thus, our conclusion is that `playerid` is NMAR without additional context outside of `relevant_df`, but it could be MAR when we incorporate metadata from the full dataset.
+Thus, our conclusion is that **`playerid` is NMAR without additional context outside of `relevant_df`, but it could be MAR when we incorporate metadata from the full dataset**.
 
 ### **Missingness Dependency**
 
@@ -198,7 +206,7 @@ Unlike playerid, `teamid` is central to our primary research question: how **tea
 
 While teamid also has missing values in **relevant_df**, we realized that to properly investigate its missingness mechanism, we needed to go beyond **relevant_df**. Many of the variables such as match level data like `datacompleteness` were likely to explain its absence. Othe arbitrary gameplay statistics like `earnedgpm` could also be analyzed in context too, but these columns were only available in the original full dataset (df).
 
-Therefore, we extended our analysis and performed permutation tests using variables from the full dataset. Our goal was to determine whether the missingness of `teamid` is Missing Completely At Random (MCAR), Missing At Random (MAR), or potentially NMAR. If the missingness can be explained by known columns, it would support a MAR classification and justify our earlier decision to drop rows with missing teamid in `wards_df` (aka `grouped`). If not, we would need to re-evaluate our cleaning method.
+Therefore, we extended our analysis and performed permutation tests using variables from the full dataset. Our goal was to determine whether the missingness of `teamid` is Missing Completely At Random (MCAR), Missing At Random (MAR), or potentially NMAR. If the missingness can be explained by known columns, it would support a MAR classification and justify our earlier decision to drop rows with missing teamid in `wards_df`. If not, we would need to re-evaluate our cleaning method.
 
 The following permutation tests evaluate whether `teamid` missingness depends on observed columns.
 
@@ -208,11 +216,11 @@ Our hypothesis is that `teamid` is Missing At Random (MAR), because it would jus
 
 - Another column in `df` that should be related (like `datacompleteness`, since if the data is only partially complete is missing, we might expect teamid to be incomplete)
 
-- Another column in `df` that should not be related (like earnedgpm, since earned gold per minute shouldn't logically influence whether a team's name is recorded or not)
+- Another column in `df` that should not be related (like `earnedgpm`, since earned gold per minute shouldn't logically influence whether a team's name is recorded or not)
 
-We conducted permutation tests to investigate whether the distributions of these variables change depending on whether teamid is missing or not. The basic idea of these permutaion tests is to get evidence that if our p-value is low, then the column is likely MAR. If it is not low, then the column is likely MCAR. Below, we present and interpret our results. **We set our alpha threshold at standard 0.05**.
+We conducted permutation tests to investigate whether the distributions of these variables change depending on whether teamid is missing or not. The basic idea of these permutaion tests is to get evidence that if our p-value is low, then the column is likely MAR. If it is not low, then the column is likely MCAR. Below, we present and interpret our results. We also made our alpha threshold at a standard 0.05.
 
-**Note: We have to be careful on which columns we select to test!** If the column we are testing against also has missing values that overlap with teamid, then our permutation test can give artificially low p-values, not because there's a true association. This is because both columns could be missing in the same rows. We can  find which columns to pick using code.
+**Note: We have to be careful on which columns we select to test!** If the column we are testing against also has missing values that overlap with teamid, then our permutation test can give **artificially low p-values**, not because there's a true association! This is because both columns could be missing in the same rows. We can  find which columns to pick using code.
 
 ### Earned GPM vs. TeamID Missingness
 
@@ -258,15 +266,15 @@ We formally define the following:
 
 After running our permutation tests:
 
-The p-value for `earnedgpm` was above 0.05, which is not statistically significant at α = 0.05, suggesting we found at least one column without a meaningful relationship between missingness of teamid and gold earned per minute. This is a gameplay statistic unrelated to data collection quality.
+The **p-value for `earnedgpm` was above 0.05**, which is not statistically significant at α = 0.05, suggesting we found at least one column without a meaningful relationship between missingness of teamid and gold earned per minute. This is a gameplay statistic unrelated to data collection quality.
 
-The p-value for `datacompleteness` was below 0.05, indicating a strong relationship between whether a row has a missing teamid and whether the match was flagged as "complete" or "partial."
+The **p-value for `datacompleteness` was below 0.05**, indicating a **strong relationship between whether a row has a missing teamid and whether the match was flagged as "complete" or "partial"**.
 
 These results rule out MCAR (Missing Completely At Random) for `teamid`, because at least one observed column (`datacompleteness`) does explain the missingness. This supports the interpretation that teamid is Missing At Random (MAR). The probability of teamid being missing is highly related to other observed variables in the dataset (like metadata about match completeness), but not to unobservable factors.
 
-Since the missingness is explainable by observed data, we can conclude that `teamid` does not have an NMAR missingness mechanism, and thus our earlier choice to drop rows with missing teamid is justified. Doing so likely does not introduce bias into our core analysis of WPM vs. win rate, because the mechanism driving the missingness is not related to the values of the statistics we're analyzing (like `earnedgpm` or `wpm`), but to data quality flags.
+Since the missingness is explainable by observed data, we can conclude that **`teamid` does not have an NMAR missingness mechanism, and thus our earlier choice to drop rows with missing teamid is justified**. Doing so likely does not introduce bias into our core analysis of WPM vs. win rate, because the mechanism driving the missingness is not related to the values of the statistics we're analyzing (like `earnedgpm` or `wpm`), but to data quality flags.
 
-In contrast, we cannot make the same claim for `playerid` (as discussed previously), which may be NMAR due to factors that are not observable in the current context (`relevant_df`). Fortunately, since playerid is not central to our analysis, this does not impact the validity of our conclusions.
+In contrast, we cannot make the same claim for `playerid` (as discussed previously), which may be NMAR due to factors that are not observable in the current context (`relevant_df`). Fortunately, since `playerid` is not central to our analysis, this does not impact the validity of our conclusions.
 
 ## **Hypothesis Testing**
 
@@ -291,11 +299,13 @@ We formally define our null, alternative hypothesis, test statistic, and signifi
   frameborder="0"
 ></iframe>
 
-Our permutation test yielded a p-value approximately equal to 0.00, that we reject the null hypothesis. We conclude that teams that win have a higher average wpm than teams that lose. 
+**The p-value was: 0.0000, reject the null hypothesis.**
 
-In hindsight, this also makes sense intuitively. First, through a statistical perspective, although the visualiztion showed the distributions of mean_wpm from winners vs losers to be very similar, we have to account for the sheer size of the dataset. There are **19156** entries in `wards_df`. Even if the two distributions overlap a lot, the sheer size of our dataset (tens of thousands of games) increases our test's power. This can make even a small mean differences become detectable, and thus seem statistically significant.
+Our permutation test yielded a p-value approximately equal to 0.00, and thus we rejected the null hypothesis. We conclude that **teams that win have a higher average wpm than teams that lose**. 
 
-Warding is a key strategic element in LoL. Teams that place more wards should, and now we confidently believe with evidence, gain better vision control, allowing them to track enemy movements, avoid ambushes, and secure objectives more effectively. This would increase the chances of winning. Therefore, it is expected that winning teams have consistently higher warding activity.
+In hindsight, this also makes sense intuitively. First, through a statistical perspective, **although the visualiztion showed the distributions of mean_wpm from winners vs losers to be very similar, we have to account for the sheer size of the dataset**. There are **19156** entries in `wards_df`. Even if the two distributions overlap a lot, the sheer size of our dataset (tens of thousands of games) increases our test's power. This can make even a small mean differences become detectable, and thus seem statistically significant.
+
+Warding is a key strategic element in LoL. Teams that place more wards should gain better vision control, allowing them to track enemy movements, avoid ambushes, and secure objectives more effectively. This would increase the chances of winning, and now we confidently assert this with evidence. Therefore, it is expected that winning teams have consistently higher warding activity.
 
 Hence, the extremely low p-value reflects a strong and consistent pattern: teams that ward more frequently are more likely to win, confirming the importance of vision control in LoL success.
 
@@ -310,23 +320,19 @@ If we find the classes are imbalanced, we will additionally report the F1-score 
 All features used in our model are available prior to the end of the match. We will not use any information that could reveal the outcome before prediction time.
 Our modeling process follows a standard, reproducible pipeline:
 
-1. Train/Test Split
-We will split the data into training and test sets to separate model fitting from final evaluation.
+1. **Train/Test Split**: We will split the data into training and test sets to separate model fitting from final evaluation.
 
-2. Preprocessing and Pipeline
-We will use ColumnTransformer and Pipeline to apply preprocessing (e.g., encoding categorical variables and scaling numeric ones) consistently across cross-validation and the final model.
+2. **Preprocessing and Pipeline**: We will use ColumnTransformer and Pipeline to apply preprocessing (e.g., encoding categorical variables and scaling numeric ones) consistently across cross-validation and the final model.
 
-3. Cross-Validation and Hyperparameter Tuning
-We will apply grid search with cross-validation to tune model hyperparameters using only the training data.
+3. **Cross-Validation and Hyperparameter Tuning**: We will apply grid search with cross-validation to tune model hyperparameters using only the training data.
 
-4. Final Evaluation
-After selecting the best model, we will evaluate its generalization performance on the held-out test set, which is only used once to report final metrics.
+4. **Final Evaluation**: After selecting the best model, we will evaluate its generalization performance on the held-out test set, which is only used once to report final metrics.
 
 ## **Baseline Model**
 
-From now on, we need to approach this section with a different dataframe called `df_model`. The original dataframe `wards_df` showcased aggregated data that was appropriate for conducting the permutation tests in previous sections. However, our prediction problem demands us to use other features outside of `wards_df`. So here, we use `df_model`, a filtered version of the full dataset containing only complete observations (*in game play statistics, e.g. it ignores whether columns like `teamid` is filled or not, because it is unrelated to gameplay*), to train and evaluate a classification model.
+From now on, **we need to approach this section with a different dataframe called `df_model`**. The original dataframe `wards_df` showcased aggregated data that was appropriate for conducting the permutation tests in previous sections. However, our prediction problem demands us to use **other features outside of `wards_df`**. So here, we use `df_model`, a filtered version of the full dataset containing only complete observations (*in game play statistics, e.g. it ignores whether columns like `teamid` is filled or not, because it is unrelated to gameplay*), to train and evaluate a classification model.
 
-Let's take a look at `df_model`. Note not all columns are shown, and this is a query that represents all rows that have `datacompleteness` as complete.
+Let's take a look at `df_model`. Note not all columns are shown, and this is a dataframe that represents all rows that have `datacompleteness` as complete.
 
 <div style="overflow-x: auto; white-space: nowrap;">
 
@@ -349,37 +355,37 @@ This dataset allows us to include richer in-game features — such as:
 
 **Quantitative features**: 2
 
-- *Discrete features*: 0 (none of our features were produced by counting)
-- *Continuous features*: 2 (wpm and vspm)
+- **Discrete features**: 0 (none of our features were produced by counting)
+- **Continuous features**: 2 (wpm and vspm)
 
 **Categorical features**: 2
 
-- *Ordinal features*: 0 (none of our features have a meaningful order, like ranks or ratings)
-- *Nominal features*: 2 (side and position)
+- **Ordinal features**: 0 (none of our features have a meaningful order, like ranks or ratings)
+- **Nominal features**: 2 (side and position)
 
 The goal is to predict the result (1 = win, 0 = loss), based on these features.
 
 ### Building the Model
 
-We decided to build our model using only entries where the data is fully complete, as indicated by the `datacompleteness` column. Including rows that could potentially have missing crucial data in our scope of analysis could introduce **unwanted bias or noise** into the model. To avoid this, we filtered the dataset to retain only rows where `datacompleteness` == 'complete'.
+We decided to build our model using only entries where the data is fully complete, as indicated by the `datacompleteness` column. Including rows that could potentially have missing crucial data in our scope of analysis could introduce **unwanted bias or noise** into the model. To avoid this, we filtered the dataset to retain only rows where `datacompleteness` is equal to 'complete'.
 
 For context, two of our input features: `side` and `position`, are categorical. To use them effectively in our model, we applied one-hot encoding, which converts each category into a binary feature. This allows categorical variables to be represented numerically and interpreted correctly by the model. The other features of interest, `wpm` and `vspm`, were already numerical. They were passed through without transformation.
 
-We implemented this preprocessing using a ColumnTransformer, which applies different transformations to different feature types, and wrapped it into a pipeline for a clean and modular modeling workflow.
+We implemented this preprocessing using a **ColumnTransformer**, which applies different transformations to different feature types, and wrapped it into a **pipeline** for a clean and modular modeling workflow.
 
 We followed a standard supervised learning workflow:
 
 1. **Train/Test Split**:
-We split the data into training and test sets using an 80/20 split, with stratify=y to preserve the class balance in both sets. This ensures that the distribution of wins and losses remains consistent across the training and testing partitions.
+We splited the data into training and test sets using an 80/20 split, with stratify=y to preserve the class balance in both sets. This ensures that the distribution of wins and losses remains consistent across the training and testing partitions.
 
 2. **Preprocessing**:
 Since side and position are categorical variables, we **one-hot encode** them (dropping the first category to avoid multicollinearity). The numeric features (wpm, vspm) are passed through without transformation.
 
 3. **Baseline Model — Decision Tree**:
-We use a Decision Tree Classifier as our baseline model. The reason for using a decision tree is because **our predictive column `result` has binary representations(**. 1 = win, 0 = lose. So naturally, decision trees would be perfect for this job, because it is interpretable model that often serves as a good starting point in **binary classification tasks**.
+We used a Decision Tree Classifier as our baseline model. The reason for using a decision tree is because **our predictive column `result` has binary representations**. 1 = win, 0 = lose. So naturally, decision trees would be perfect for this job, because it is interpretable model that often serves as a good starting point in **binary classification tasks**.
 
 4. **Pipeline**:
-We combine preprocessing and modeling into a single Pipeline using make_pipeline, which helps ensure clean, repeatable transformations during both training and evaluation.
+We combined preprocessing and modeling into a single Pipeline using `make_pipeline`, which helps ensure clean, repeatable transformations during both training and evaluation.
 
 ### Results
 
@@ -408,9 +414,11 @@ Based on these descriptions, we believe that these variables are relevant to `wp
 
 We will also reuse the same splitting strategy as in the baseline model:
 
-1. 80/20 split into training and testing sets
-2. Stratified sampling to maintain the class balance
-3. Fixed random seed for reproducibility
+1. **80/20 split**: into training and testing sets
+
+2. **Stratified sampling**: to maintain the class balance
+
+3. **Fixed random seed**: for reproducibility
 
 This ensures a fair comparison between the baseline and final models, so we can evaluate our attempt at improving this model.
 
@@ -429,11 +437,13 @@ We made this pipeline to ensure that preprocessing is applied consistently acros
 
 ### Building the Final Model
 
-For our final model, we continued using a **Decision Tree Classifier** due to its interpretability and ability to predict binary classifiers (i.e. `result`). However, unlike in the baseline model, we now perform **hyperparameter** tuning to improve the model's performance and avoid overfitting or underfitting.
+For our final model, we continued using a **Decision Tree Classifier** due to its interpretability and ability to predict binary classifiers (i.e. `result`). However, unlike in the baseline model, we will now perform **hyperparameter** tuning to improve the model's performance and avoid overfitting or underfitting.
 
 The primary hyperparameter we want to tune is **max_depth**, which controls the maximum depth of the tree. We want to avoid a tree that is too shallow (which may underfit the model), and a tree that is too deep (which may overfit the model).
 
-To find an appropriate depth, we use **GridSearchCV**, which performs an exhaustive search to find the optimal height/hyperparameter to use. In our case, we chose and tested five different depths: **[3, 5, 7, 10, 15]**.
+To find an appropriate depth, we use **GridSearchCV**, which performs an exhaustive search to find the optimal height/hyperparameter to use. In our case, we chose and tested five different depths:
+
+**[3, 5, 7, 10, 15]**
 
 To evaluate each option, we will use:
 
@@ -456,19 +466,14 @@ Let's take a look at it's performance, and also create a confusion matrix to vis
   frameborder="0"
 ></iframe>
 
-Accuracy: 0.606
-Precision: 0.601
-Recall: 0.628
-F1-score: 0.615
-
 What can we interpret from this?
 
 The confusion matrix provides a breakdown of our Decision Tree model’s predictions:
 
-- **Top-left (True Negatives)**: The number of times the model correctly predicted a loss.
-- **Bottom-right (True Positives)**: The number of times the model correctly predicted a win.
-- **Top-right (False Positives)**: Losses incorrectly predicted as wins.
-- **Bottom-left (False Negatives)**: Wins incorrectly predicted as losses.
+- **Top-left (*True Negatives*)**: The number of times the model correctly predicted a loss.
+- **Bottom-right (*True Positives*)**: The number of times the model correctly predicted a win.
+- **Top-right (*False Positives*)**: Losses incorrectly predicted as wins.
+- **Bottom-left (*False Negatives*)**: Wins incorrectly predicted as losses.
 
 Judging based off of this, our final model accuracy seems to be mediocre, because although the number of false positives and false negatives are lower than the number of true positive and true negatives, it is low enough. There is only a thousand-ish difference between them. We expected more. However, it is acceptable nonentheless because it is an improvement over our base model.
 
@@ -484,7 +489,7 @@ These metrics show a clear improvement over the baseline model. **Accuracy has i
 
 ## **Fairness Analysis**
 
-In this final section, we will futher investigate the potential biases of our model. More specifically, we will investigate whether our model treats teams differently based on their side selection. In other words, whether it predicts wins more accurately for teams starting on the **Blue** (Group X) side versus the **Red** (Group Y) side.
+In this final section, we will futher investigate the potential biases of our model. More specifically, we will **investigate whether our model treats teams differently based on their side selection**. In other words, whether it predicts wins more accurately for teams starting on the **Blue** (Group X) side versus the **Red** (Group Y) side.
 
 In LoL, each match is split into two opposing teams: Red and Blue. Although both sides function symmetrically in layout at a first glance, their placements actually differ in objective positioning, and vision angles. These differences can **influence gameplay and outcomes**, which is why "side selection" is often a strategic consideration in professional play. We can further visualize this by taking a look at the `side` and `position` columns in our original dataset.
 
@@ -508,9 +513,9 @@ In our fairness analysis, we will examine whether our model performs equitably a
 
 We will use scikit-learn's precision_score function to calculate the precision scores among the two groups.
 
-- **Precision** (`Blue`): 0.627
-- **Precision** (`Red`): 0.572
-- **Observed Difference** (`Blue` − `Red`): 0.055
+- **Precision (*Blue*)**: 0.627
+- **Precision (*Red*)**: 0.572
+- **Observed Difference (*Blue* − *Red*)**: 0.055
 
 This slight ~5% difference suggests our model is more precise in predicting wins for Blue side teams than Red side teams.
 
@@ -518,7 +523,7 @@ Now, **to assess whether this difference could have arisen by chance, we ran a p
 
 Here is our permutation test formal declarations:
 
-- **Null Hypothesis** (H₀): There is no difference in the model’s precision for predicting wins between Blue side teams and Red side teams.
+- **Null Hypothesis** (H₀): There is no difference in the model’s precision for predicting wins between Blue side teams and Red side teams. In other words: Precision(*Blue*) == Precision(*Red*) 
 
     - In other words: Precision(Blue) == Precision(Red) 
  
@@ -526,9 +531,9 @@ Here is our permutation test formal declarations:
 
     - In other words: Precision(Blue) == Precision(Red)
 
-This is a two-sided test because we are open to finding a difference in either direction (i.e., either side could have higher precision).
+This is a two-sided test because we are open to finding a difference in either direction (i.e., either side could have higher precision). In other words: Precision(*Blue*) != Precision(*Red*)
 
-Let's see how our observed difference of 0.055 falls in this distribution! We will use a standard significance level of 0.05.
+Let's see how our observed difference of 0.055 falls in this distribution. We will use a standard significance level of 0.05 as usual.
 
 <iframe
   src="assets/permutation-precision-diff.html"
@@ -543,9 +548,9 @@ Since our p-value is well below the alpha threshold of 0.05, **we reject the nul
 
 This finding raises a potential fairness concern: the model may be unintentionally biased toward teams starting on the Blue side. This could stem from:
 
-- Systemic differences in how Blue and Red sides play (e.g. pick order advantages, objective positioning)
-- Imbalanced data, if more Blue side teams win in the training set
-- Feature encoding or gameplay dynamics that interact differently with side
+- **Systemic differences** in how Blue and Red sides play (e.g. pick order advantages, objective positioning)
+- **Imbalanced data**, if more Blue side teams win in the training set
+- **Feature encoding or gameplay dynamics** that interact differently with side
 
 Of course, other forms of bias may exist. For example, by league, region, or even individual players (if some are overrepresented in the data). A more comprehensive fairness exploration would be needed to evaluate these potential biases as well.
 
@@ -558,3 +563,5 @@ We then used hypothesis testing to determine that wpm is significantly associate
 Our final model showed modest improvement over the baseline (accuracy: 0.538 → 0.606), indicating these added features do improve predictive power. Finally, we conducted a fairness analysis and found the model is significantly more precise at predicting wins for Blue side teams than Red side, raising important questions about potential bias tied to gameplay dynamics or data imbalance.
 
 Overall, this project gives an insight on preprocessing, statistical testing, and fairness analysis when building interpretable models in LoL esports analytics.
+
+Thank you for checking out our project!
